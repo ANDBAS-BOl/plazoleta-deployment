@@ -59,7 +59,7 @@ Los `docker-compose.yml` de los microservicios declaran una red `pragma-net` com
 ## 5) Verificación rápida
 
 1. Verifica que estén corriendo los contenedores:
-   - `plazoleta-deployment` (MySQL)
+   - `pragma-sql` (MySQL)
    - `pragma-mongodb` (MongoDB)
    - `pragma-usuarios`, `pragma-plazoleta`, `pragma-mensajeria`, `pragma-trazabilidad` (microservicios)
 
