@@ -18,16 +18,14 @@ Microservicios:
 
 ## 1) Clonar los 4 microservicios
 
-Clona los repositorios en carpetas separadas (reemplaza las URLs):
+Clona los repositorios en carpetas separadas:
 
 ```bash
-git clone <URL_USUARIOS_MICROSERVICE> usuarios-microservice
-git clone <URL_PLAZOLETA_MICROSERVICE> plazoleta-microservice
-git clone <URL_MENSAJERIA_MICROSERVICE> mensajeria-microservice
-git clone <URL_TRAZABILIDAD_MICROSERVICE> trazabilidad-microservice
+git clone https://github.com/ANDBAS-BOl/usuarios-microservice
+git clone https://github.com/ANDBAS-BOl/plazoleta-microservice
+git clone https://github.com/ANDBAS-BOl/mensajeria-microservice
+git clone https://github.com/ANDBAS-BOl/trazabilidad-microservice
 ```
-
-> Si ya tienes los microservicios descargados (como en este workspace), puedes omitir este paso.
 
 ## 2) Configurar variables de BD
 
@@ -45,7 +43,7 @@ docker compose -f docker/compose-db.yml up -d
 
 Notas importantes:
 
-- El contenedor de MySQL se llama exactamente `plazoleta-deployment` (cumple la convención pedida).
+- El contenedor de MySQL se llama exactamente `plazoleta-deployment`.
 - Los microservicios en Docker se conectan usando los hostnames `pragma-mysql` y `pragma-mongodb`; para compatibilidad, este compose configura aliases dentro de la red `pragma-net`.
 
 ## 4) Levantar los microservicios (Docker)
@@ -75,4 +73,3 @@ Los `docker-compose.yml` de los microservicios declaran una red `pragma-net` com
 
 - `docker/compose-db.yml`: compose maestro para MySQL + MongoDB
 - `init/`: scripts de inicialización (MySQL schemas + Mongo user/collections)
-
