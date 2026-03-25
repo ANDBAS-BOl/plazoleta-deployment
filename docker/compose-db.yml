@@ -1,0 +1,85 @@
+version: "3.8"
+
+# ============================================================
+#  Docker Compose – Bases de Datos (Desafío Pragma)
+#  Levanta:
+#    • MySQL  8  → schemas: pragma_usuarios, pragma_plazoleta
+#    • MongoDB 6 → db:      pragma_trazabilidad
+#
+#  Uso:
+#    docker compose -f docker/compose-db.yml up -d
+#    docker compose -f docker/compose-db.yml down -v   # destruir volúmenes
+# ============================================================
+
+services:
+  # ----------------------------------------------------------
+  # MySQL – Usuarios + Plazoleta
+  # ----------------------------------------------------------
+  mysql:
+    image: mysql:8.0
+    container_name: plazoleta-deployment
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_USER: ${MYSQL_USER:-pragma_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pragma_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init/mysql:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      pragma-net:
+        # Los microservicios en Docker usan estos hostnames
+        aliases:
+          - pragma-mysql
+
+  # ----------------------------------------------------------
+  # MongoDB – Trazabilidad
+  # ----------------------------------------------------------
+  mongodb:
+    image: mongo:6.0
+    container_name: pragma-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-mongoadmin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-mongopassword}
+      MONGO_INITDB_DATABASE: pragma_trazabilidad
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+      - ./init/mongo:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      pragma-net:
+        aliases:
+          - pragma-mongodb
+
+# ----------------------------------------------------------
+# Volúmenes y network
+# ----------------------------------------------------------
+volumes:
+  mysql_data:
+    driver: local
+  mongo_data:
+    driver: local
+
+networks:
+  # Usamos el nombre exacto `pragma-net` para que los microservicios
+  # (que declaran `external: true`) puedan conectarse entre sí.
+  pragma-net:
+    driver: bridge
+    name: pragma-net
+

@@ -1,0 +1,10 @@
+# Variables reales
+.env
+
+# Docker Compose state/logs (si aplica)
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
