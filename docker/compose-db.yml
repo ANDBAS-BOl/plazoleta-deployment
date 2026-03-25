@@ -1,7 +1,7 @@
 version: "3.8"
 
 # ============================================================
-#  Docker Compose – Bases de Datos (Desafío Pragma)
+#  Docker Compose – Bases de Datos
 #  Levanta:
 #    • MySQL  8  → schemas: pragma_usuarios, pragma_plazoleta
 #    • MongoDB 6 → db:      pragma_trazabilidad
@@ -11,13 +11,15 @@ version: "3.8"
 #    docker compose -f docker/compose-db.yml down -v   # destruir volúmenes
 # ============================================================
 
+name: plazoleta-deployment
+
 services:
   # ----------------------------------------------------------
   # MySQL – Usuarios + Plazoleta
   # ----------------------------------------------------------
   mysql:
     image: mysql:8.0
-    container_name: plazoleta-deployment
+    container_name: pragma-sql
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
@@ -36,7 +38,6 @@ services:
       start_period: 30s
     networks:
       pragma-net:
-        # Los microservicios en Docker usan estos hostnames
         aliases:
           - pragma-mysql
 
@@ -77,8 +78,6 @@ volumes:
     driver: local
 
 networks:
-  # Usamos el nombre exacto `pragma-net` para que los microservicios
-  # (que declaran `external: true`) puedan conectarse entre sí.
   pragma-net:
     driver: bridge
     name: pragma-net
