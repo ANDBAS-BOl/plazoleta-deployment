@@ -43,7 +43,7 @@ docker compose -f docker/compose-db.yml up -d
 
 Notas importantes:
 
-- El contenedor de MySQL se llama exactamente `plazoleta-deployment`.
+- El contenedor de MySQL se llama exactamente `pragma-sql`.
 - Los microservicios en Docker se conectan usando los hostnames `pragma-mysql` y `pragma-mongodb`; para compatibilidad, este compose configura aliases dentro de la red `pragma-net`.
 
 ## 4) Levantar los microservicios (Docker)
