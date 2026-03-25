@@ -1,5 +1,3 @@
-version: "3.8"
-
 # ============================================================
 #  Docker Compose – Bases de Datos
 #  Levanta:
@@ -29,7 +27,8 @@ services:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./init/mysql:/docker-entrypoint-initdb.d:ro
+      # Rutas relativas al directorio de este archivo compose (docker/)
+      - ../init/mysql:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-rootpassword}"]
       interval: 10s
@@ -56,7 +55,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-      - ./init/mongo:/docker-entrypoint-initdb.d:ro
+      - ../init/mongo:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
       interval: 10s
