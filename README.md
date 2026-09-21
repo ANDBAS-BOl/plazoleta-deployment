@@ -50,12 +50,14 @@ cp .env.example .env
 
 ## 3) Levantar bases de datos
 
-**Importante:** ejecuta siempre `docker compose -f docker/compose-db.yml` **desde la carpeta raíz de este repositorio** (`plazoleta-deployment`), no desde `docker/` ni desde otra ruta. El archivo `compose-db.yml` monta los scripts de init con rutas relativas (`../init/mysql`, `../init/mongo`); si el directorio de trabajo de Compose no es `plazoleta-deployment`, esas rutas apuntan a carpetas equivocadas y MySQL/Mongo pueden arrancar sin esquemas ni usuarios. Si necesitas lanzar el compose desde otro sitio, usa `docker compose --project-directory /ruta/a/plazoleta-deployment -f /ruta/a/plazoleta-deployment/docker/compose-db.yml up -d` (o equivalente con `working_dir` en tu entorno).
+**Importante — pasa siempre `--env-file .env`.** Compose no busca el `.env` en tu carpeta actual, sino junto al archivo compose (es decir, en `docker/`). Como el paso anterior deja el `.env` en la raíz del repositorio, lanzar el compose sin ese flag **ignora tu `.env` en silencio** y usa los valores por defecto, sin avisar de nada.
+
+> **No uses `--project-directory` para esto.** Sí hace que se lea el `.env`, pero también cambia la base contra la > que se resuelven las rutas relativas del compose: `../init/mysql` pasa a apuntar *fuera* del repositorio y los > contenedores arrancan sin esquemas ni usuarios. `--env-file` arregla el `.env` sin tocar los montajes.
 
 Desde la carpeta raíz de `plazoleta-deployment`:
 
 ```bash
-docker compose -f docker/compose-db.yml up -d
+docker compose --env-file .env -f docker/compose-db.yml up -d
 ```
 
 ### Re-ejecución de init (Mongo / HU17)
@@ -65,8 +67,8 @@ Si ya existían volúmenes previos, los scripts en `plazoleta-deployment/init/*`
 Para forzar la re-ejecución de init y volver a crear usuarios/colecciones:
 
 ```bash
-docker compose -f docker/compose-db.yml down -v
-docker compose -f docker/compose-db.yml up -d
+docker compose --env-file .env -f docker/compose-db.yml down -v
+docker compose --env-file .env -f docker/compose-db.yml up -d
 ```
 
 Notas importantes:
@@ -103,11 +105,19 @@ Los `docker-compose.yml` de los microservicios declaran una red `pragma-net` com
    - Trazabilidad: `http://localhost:8083/swagger-ui.html`
    - Mensajería: `http://localhost:8084/swagger-ui.html`
 
-4. **Tests automatizados (`./gradlew test`):** cobertura orientativa por microservicio (Fase 6 del plan):
-   - **usuarios:** `UsuarioUseCaseTest`, `UsuariosApiIT` (API + H2), smoke de contexto.
-   - **plazoleta:** `PlazoletaServiceTest` (reglas de pedido, PIN, concurrencia, rollback SMS, etc.), `PlazoletaServiceContractTest` (WireMock: Usuarios, Mensajería, Trazabilidad).
-   - **mensajería:** `MensajeriaRestControllerTest` (JWT y endpoint SMS).
-   - **trazabilidad:** `OrderTraceApiIT`, smoke de contexto.
+4. **Tests automatizados:** cada microservicio trae su propia suite y se ejecuta desde su carpeta con
+   `./gradlew test`. No hace falta levantar nada de este repositorio para correrlos.
+
+   Qué cubre cada suite, los umbrales de cobertura y cómo generar el reporte de JaCoCo están
+   documentados en el README de cada repositorio, que es la fuente que se mantiene al día:
+
+   - [`usuarios-microservice`](https://github.com/ANDBAS-BOl/usuarios-microservice)
+   - [`plazoleta-microservice`](https://github.com/ANDBAS-BOl/plazoleta-microservice)
+   - [`trazabilidad-microservice`](https://github.com/ANDBAS-BOl/trazabilidad-microservice)
+   - [`mensajeria-microservice`](https://github.com/ANDBAS-BOl/mensajeria-microservice)
+
+   `trazabilidad` levanta un MongoDB embebido y `mensajeria` usa un mock del proveedor SMS, así que
+   sus pruebas corren sin Docker, sin base de datos y sin credenciales de Twilio.
 
 ## Estructura de carpetas
 

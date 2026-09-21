@@ -51,6 +51,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-mongoadmin}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-mongopassword}
       MONGO_INITDB_DATABASE: pragma_trazabilidad
+      # Usuario de aplicacion que crea init/mongo/01-init-trazabilidad.js
+      MONGO_APP_USER: ${MONGO_APP_USER:-pragma_user}
+      MONGO_APP_PASSWORD: ${MONGO_APP_PASSWORD:-pragma_pass}
     ports:
       - "27017:27017"
     volumes:
