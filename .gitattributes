@@ -1,0 +1,7 @@
+# Estos ficheros los ejecuta Linux dentro de los contenedores, aunque el
+# repositorio se clone en Windows. Sin esto, Git los entrega con finales
+# CRLF y el contenedor falla: el shebang pasa a ser "#!/bin/sh" y MySQL
+# arranca sin esquemas ni permisos.
+*.sh              text eol=lf
+init/mongo/*.js   text eol=lf
+docker/*.yml      text eol=lf
