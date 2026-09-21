@@ -11,6 +11,21 @@ Microservicios:
 - `mensajeria-microservice`
 - `trazabilidad-microservice`
 
+## El sistema completo
+
+Este repositorio es **un componente del Sistema Plaza de Comidas**, compuesto por 4 microservicios independientes más su infraestructura. Cada servicio tiene su propia base de datos y valida el JWT de forma autónoma.
+
+> **Para levantar el sistema, empieza por [`plazoleta-deployment`](https://github.com/ANDBAS-BOl/plazoleta-deployment)**, que arranca MySQL y MongoDB.
+
+| Repositorio | Responsabilidad | Datos |
+|---|---|---|
+| [`usuarios-microservice`](https://github.com/ANDBAS-BOl/usuarios-microservice) | Usuarios, roles y **emisión de JWT** (único emisor del sistema) | MySQL |
+| [`plazoleta-microservice`](https://github.com/ANDBAS-BOl/plazoleta-microservice) | Catálogo de restaurantes/platos, flujo de pedidos y PIN de entrega | MySQL |
+| [`trazabilidad-microservice`](https://github.com/ANDBAS-BOl/trazabilidad-microservice) | Historial de estados de pedidos y métricas de eficiencia | MongoDB |
+| [`mensajeria-microservice`](https://github.com/ANDBAS-BOl/mensajeria-microservice) | Envío del SMS con el PIN, vía Twilio | — |
+| **`plazoleta-deployment`** ← estás aquí | Infraestructura Docker: MySQL y MongoDB del sistema | — |
+
+---
 ## Requisitos
 
 - Docker + Docker Compose v2
